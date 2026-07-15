@@ -41,6 +41,7 @@ export async function POST(request: NextRequest) {
     revalidatePath("/blog");
     revalidatePath("/blog/page/[page]", "page");
     revalidatePath("/blog/tag/[slug]", "page");
+    revalidatePath("/blog/author/[slug]", "page");
     revalidatePath("/sitemap.xml");
     for (const slug of new Set(slugs)) {
         revalidatePath(`/blog/${slug}`);

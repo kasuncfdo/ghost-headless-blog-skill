@@ -1,6 +1,6 @@
 ---
 name: ghost-headless-blog
-description: Implement a headless Ghost CMS blog (/blog) in a Next.js App Router site — Content API client, ISR + webhook revalidation, SEO metadata + JSON-LD, sitemap, Ghost koenig-card styling, blur-up images. Use when adding a Ghost-powered blog to a Next.js project, or debugging an existing headless Ghost integration (empty blog, stale pages, broken images/cards).
+description: Implement a headless Ghost CMS blog (/blog) in a Next.js App Router site — Content API client, ISR + webhook revalidation, tag/author/paged archives, author bio + social rendering, SEO metadata + JSON-LD, sitemap, Ghost koenig-card styling, blur-up images. Use when adding a Ghost-powered blog to a Next.js project, or debugging an existing headless Ghost integration (empty blog, stale pages, broken images/cards).
 ---
 
 # Headless Ghost blog in Next.js (App Router)
@@ -34,17 +34,21 @@ the decisions, not just the code.
 | `/blog` | Index: hero + feed. Only the Ghost-fetching part is an async component behind `<Suspense>` with a skeleton fallback. |
 | `/blog/[slug]` | Post page: metadata from Ghost SEO fields, BlogPosting JSON-LD, rendered `gh-content`, related posts. |
 | `/blog/tag/[slug]` | Tag archive (CollectionPage JSON-LD). Statically generated for crawlers even if the UI filters client-side. |
+| `/blog/author/[slug]` | Author archive: bio, avatar/cover, location, social links, post feed. ProfilePage + Person JSON-LD with `sameAs` socials. |
 | `/blog/page/[page]` | Paged feed archive; page 1 `redirect("/blog")`. |
 | `/api/revalidate` | Ghost webhook receiver → `revalidatePath` purges. |
-| `sitemap.ts` | Include posts (with real `lastModified`) + tag pages; Ghost outage must not break the sitemap (`.catch(() => [])`). |
+| `sitemap.ts` | Include posts (with real `lastModified`) + tag + author pages; Ghost outage must not break the sitemap (`.catch(() => [])`). |
 
 Full route code + metadata/JSON-LD patterns: [references/pages.md](references/pages.md).
 Setup steps (env, Ghost Admin, next.config images, webhook): [references/setup.md](references/setup.md).
+Official Ghost docs lookup (llms-full.txt section-extraction workflow, Content API
+reference URLs): [references/ghost-docs.md](references/ghost-docs.md).
 
 ## Copy-paste templates (portable, no project-specific deps)
 
 - [templates/ghost.ts](templates/ghost.ts) — typed Content API client (posts, tags,
-  slugs, related, featured, pagination, excerpt helpers, `toCardPost` projection)
+  authors, slugs, related, featured, pagination, excerpt helpers, `authorSocialLinks`
+  normalizer, `toCardPost` projection)
 - [templates/ghost-html.ts](templates/ghost-html.ts) — blur-up + LCP HTML transform
 - [templates/revalidate-route.ts](templates/revalidate-route.ts) — webhook → ISR purge
 - [templates/ghost-content.css](templates/ghost-content.css) — full `.gh-content` prose +
@@ -71,8 +75,8 @@ Setup steps (env, Ghost Admin, next.config images, webhook): [references/setup.m
    strip `html`, meta/og/twitter fields, author bios. Keeps the serialized RSC payload
    small (this mattered — full posts ballooned the page payload).
 5. **Webhook revalidates both `post.current.slug` and `post.previous.slug`** — slugs can
-   change on update. Also purge `/blog`, `/blog/page/[page]` + `/blog/tag/[slug]` (with
-   the `"page"` type arg), and `/sitemap.xml`.
+   change on update. Also purge `/blog`, `/blog/page/[page]`, `/blog/tag/[slug]` +
+   `/blog/author/[slug]` (with the `"page"` type arg), and `/sitemap.xml`.
 6. **`withBlurUpImages` HTML transform**: inject inline `onload` handlers (native HTML
    attrs — they work inside `dangerouslySetInnerHTML` without hydration), and promote the
    **first** content image from `loading="lazy"` to `loading="eager" fetchpriority="high"`

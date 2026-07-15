@@ -39,9 +39,24 @@ export interface GhostAuthor {
     name: string;
     slug: string;
     profile_image?: string | null;
+    cover_image?: string | null;
     bio?: string | null;
     website?: string | null;
+    location?: string | null;
+    // Social handles as stored by Ghost Admin: twitter/threads as "@handle",
+    // facebook/instagram/tiktok as page/handle, others as handle or full URL.
     twitter?: string | null;
+    facebook?: string | null;
+    threads?: string | null;
+    bluesky?: string | null;
+    mastodon?: string | null;
+    tiktok?: string | null;
+    youtube?: string | null;
+    instagram?: string | null;
+    linkedin?: string | null;
+    meta_title?: string | null;
+    meta_description?: string | null;
+    count?: { posts: number };
 }
 
 export interface GhostPost {
@@ -89,6 +104,11 @@ interface PostsResponse {
 
 interface TagsResponse {
     tags: GhostTag[];
+    meta: { pagination: GhostPagination };
+}
+
+interface AuthorsResponse {
+    authors: GhostAuthor[];
     meta: { pagination: GhostPagination };
 }
 
@@ -344,6 +364,92 @@ export async function getPostsByTag(
     if (!data) return { posts: [], pagination: null };
 
     return { posts: data.posts, pagination: data.meta.pagination };
+}
+
+/** Authors with at least one published post — powers /blog/author/[slug]
+ *  archives and the sitemap. Ghost never returns post-less authors. */
+export async function getAuthors(): Promise<GhostAuthor[]> {
+    if (!isGhostConfigured) return [];
+
+    const data: AuthorsResponse | null = await ghostFetch<AuthorsResponse>("authors", {
+        include: "count.posts",
+        limit: "all",
+        order: "count.posts DESC",
+    });
+
+    return data?.authors ?? [];
+}
+
+/**
+ * Fetch a single author by slug, or null when they don't exist.
+ * Browse + filter for the same reason as getPostBySlug: a missing author is an
+ * empty 200 instead of a 404 that gets retried and rethrown.
+ */
+export async function getAuthorBySlug(slug: string): Promise<GhostAuthor | null> {
+    if (!isGhostConfigured) return null;
+
+    const data: AuthorsResponse | null = await ghostFetch<AuthorsResponse>("authors", {
+        include: "count.posts",
+        filter: `slug:${slug}`,
+        limit: "1",
+    });
+
+    return data?.authors[0] ?? null;
+}
+
+/** Published posts by one author (newest first), with pagination meta. */
+export async function getPostsByAuthor(
+    slug: string,
+    page = 1,
+    limit = POSTS_PER_PAGE
+): Promise<{ posts: GhostPost[]; pagination: GhostPagination | null }> {
+    if (!isGhostConfigured) return { posts: [], pagination: null };
+
+    const data: PostsResponse | null = await ghostFetch<PostsResponse>("posts", {
+        include: "tags,authors",
+        filter: `author:${slug}`,
+        limit: String(limit),
+        page: String(page),
+        order: "published_at DESC",
+    });
+    if (!data) return { posts: [], pagination: null };
+
+    return { posts: data.posts, pagination: data.meta.pagination };
+}
+
+/**
+ * Author social profiles as labeled URLs, for byline/bio rows and the
+ * Person JSON-LD `sameAs` array. Ghost stores most networks as bare handles;
+ * values that are already URLs pass through untouched. Mastodon is skipped
+ * unless it is a full URL (instances make handles ambiguous).
+ */
+export function authorSocialLinks(
+    author: GhostAuthor
+): Array<{ label: string; url: string }> {
+    const links: Array<{ label: string; url: string }> = [];
+
+    const add = (label: string, value: string | null | undefined, base?: string) => {
+        const raw = (value || "").trim();
+        if (!raw) return;
+        if (/^https?:\/\//.test(raw)) {
+            links.push({ label, url: raw });
+        } else if (base) {
+            links.push({ label, url: `${base}${raw.replace(/^@/, "")}` });
+        }
+    };
+
+    add("Website", author.website);
+    add("X", author.twitter, "https://x.com/");
+    add("Facebook", author.facebook, "https://www.facebook.com/");
+    add("Threads", author.threads, "https://www.threads.net/@");
+    add("Bluesky", author.bluesky, "https://bsky.app/profile/");
+    add("Mastodon", author.mastodon);
+    add("TikTok", author.tiktok, "https://www.tiktok.com/@");
+    add("YouTube", author.youtube, "https://www.youtube.com/");
+    add("Instagram", author.instagram, "https://www.instagram.com/");
+    add("LinkedIn", author.linkedin, "https://www.linkedin.com/in/");
+
+    return links;
 }
 
 /**

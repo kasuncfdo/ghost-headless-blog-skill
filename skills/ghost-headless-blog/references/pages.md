@@ -168,6 +168,108 @@ excluding self).
   client-side swap (pushState), while these static pages still serve direct visits and
   crawlers.
 
+## `/blog/author/[slug]` — author archive
+
+Author pages carry the byline trust signals (bio, photo, socials) that both readers and
+search engines use, so build them even for single-author blogs.
+
+```tsx
+export async function generateStaticParams() {
+    const authors = await getAuthors().catch(() => []);
+    return authors.map(({ slug }) => ({ slug }));
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+    const { slug } = await params;
+    const author = await getAuthorBySlug(slug);
+    if (!author) return { title: "Author not found | SITE Blog" };
+
+    const title = author.meta_title || `${author.name} | SITE Blog`;
+    const description =
+        author.meta_description ||
+        author.bio ||
+        `Posts by ${author.name} on the SITE blog.`;
+
+    return {
+        title,
+        description,
+        alternates: { canonical: `/blog/author/${author.slug}` },
+        openGraph: {
+            title,
+            description,
+            url: `${BASE_URL}/blog/author/${author.slug}`,
+            siteName: "SITE",
+            type: "profile",
+            images: author.profile_image ? [{ url: author.profile_image }] : undefined,
+        },
+    };
+}
+```
+
+Page body:
+
+```tsx
+export default async function AuthorPage({ params }: PageProps) {
+    const { slug } = await params;
+    const author = await getAuthorBySlug(slug);
+    if (!author) notFound();
+
+    const { posts, pagination } = await getPostsByAuthor(slug);
+    const socials = authorSocialLinks(author);
+
+    return (
+        <>
+            <script type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(authorJsonLd(author, socials)) }} />
+            <main>
+                {/* Author header: cover_image banner (optional), profile_image
+                    avatar (BlurImage), name, bio, location, post count
+                    (author.count.posts), socials row from authorSocialLinks(). */}
+
+                {/* Posts feed: reuse the card grid with posts.map(toCardPost),
+                    Prev/Next from pagination for prolific authors. */}
+            </main>
+        </>
+    );
+}
+```
+
+ProfilePage + Person JSON-LD (`sameAs` is what links the byline to the author's real
+profiles for E-E-A-T):
+
+```ts
+function authorJsonLd(author: GhostAuthor, socials: Array<{ label: string; url: string }>) {
+    return {
+        "@context": "https://schema.org",
+        "@type": "ProfilePage",
+        url: `${BASE_URL}/blog/author/${author.slug}`,
+        mainEntity: {
+            "@type": "Person",
+            name: author.name,
+            description: author.bio || undefined,
+            image: author.profile_image || undefined,
+            url: `${BASE_URL}/blog/author/${author.slug}`,
+            sameAs: socials.map((s) => s.url),
+        },
+        isPartOf: { "@type": "Blog", name: "SITE Blog", url: `${BASE_URL}/blog` },
+    };
+}
+```
+
+Rendering notes:
+
+- `authorSocialLinks()` (in `ghost.ts`) normalizes Ghost's stored handles
+  (`@handle`, bare usernames, full URLs) into labeled profile URLs; render them as an
+  icon row with `rel="me noopener"` and `target="_blank"`.
+- On the **post page**, link every byline (avatar + name) to
+  `/blog/author/${author.slug}` with `next/link`, and upgrade the BlogPosting JSON-LD
+  author to include `url: ${BASE_URL}/blog/author/${slug}` and the same `sameAs` array.
+  That connects Person entities across the site.
+- Multi-author posts: `post.authors` is the full list; `primary_author` is the first.
+  Render all avatars, link each one.
+- `getAuthors()` only returns authors with published posts, so there is no empty-archive
+  case to guard beyond the usual `notFound()`.
+
 ## `/blog/page/[page]` — paged archive
 
 - `generateStaticParams`: fetch page 1 to learn `pagination.pages`, emit params for
@@ -184,9 +286,10 @@ export const revalidate = 3600; // webhook purges /sitemap.xml instantly too
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // A Ghost outage must not break the whole sitemap:
-    const [posts, tags] = await Promise.all([
+    const [posts, tags, authors] = await Promise.all([
         getPostSlugs().catch(() => []),
         getTags().catch(() => []),
+        getAuthors().catch(() => []),
     ]);
 
     return [
@@ -198,6 +301,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             lastModified: new Date(p.updated_at || p.published_at),
         })),
         ...tags.map((t) => ({ url: `${BASE_URL}/blog/tag/${t.slug}` })),
+        ...authors.map((a) => ({ url: `${BASE_URL}/blog/author/${a.slug}` })),
     ];
 }
 ```
