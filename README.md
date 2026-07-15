@@ -55,7 +55,18 @@ Update later with:
 /plugin marketplace update kasuncfdo-skills
 ```
 
-### Option B: personal skill (no plugin system)
+### Option B: skills CLI (works across agents)
+
+Installs into Claude Code, Cursor, Codex, and other agents supported by the
+[skills](https://skills.sh) ecosystem:
+
+```bash
+npx skills add kasuncfdo/ghost-headless-blog-skill
+```
+
+Add `-g` for a global (user-level) install instead of the current project.
+
+### Option C: personal skill (no plugin system)
 
 Copy the skill folder into your user skills directory:
 
@@ -65,7 +76,7 @@ mkdir -p ~/.claude/skills
 cp -R ghost-headless-blog-skill/skills/ghost-headless-blog ~/.claude/skills/
 ```
 
-### Option C: per-project skill
+### Option D: per-project skill
 
 Ship it with one repo only (teammates get it too):
 
