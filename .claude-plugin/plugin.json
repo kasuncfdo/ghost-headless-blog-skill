@@ -1,0 +1,13 @@
+{
+    "name": "ghost-headless-blog",
+    "version": "1.0.0",
+    "description": "Headless Ghost CMS blog for Next.js App Router — Content API client, ISR + webhook revalidation, SEO metadata + JSON-LD, sitemap, Ghost koenig-card styling, blur-up images. Battle-tested patterns with copy-paste templates.",
+    "author": {
+        "name": "Kasun Chanuka Fernando",
+        "url": "https://github.com/kasuncfdo"
+    },
+    "homepage": "https://github.com/kasuncfdo/ghost-headless-blog-skill",
+    "repository": "https://github.com/kasuncfdo/ghost-headless-blog-skill",
+    "license": "MIT",
+    "keywords": ["ghost", "ghost-cms", "headless-cms", "nextjs", "blog", "isr", "seo"]
+}

@@ -1,0 +1,622 @@
+/*
+ * Prose styles for Ghost-rendered post HTML (.gh-content): Tailwind-typography-
+ * scale prose plus Ghost's default koenig card styles (callout / bookmark /
+ * toggle / button / gallery / embed), mapped onto a dark palette.
+ *
+ * Brand accent: set --ghost-accent on :root (falls back to #1c6ef5).
+ * Dark-palette tokens: text 84–90% white · muted 60–75% white · border 18% white.
+ * For a light site, invert the white/xx values and the code-block colors.
+ */
+
+.gh-content {
+    font-size: 1rem;
+    line-height: 1.65;
+    color: rgb(255 255 255 / 0.84);
+    word-break: break-word;
+}
+
+/* ---- Spacing ---- */
+
+.gh-content > * + * {
+    margin-top: 1em;
+}
+
+.gh-content > p + ul,
+.gh-content > p + ol {
+    margin-top: 0.25em;
+}
+
+.gh-content > .kg-card,
+.gh-content > figure.kg-card.kg-bookmark-card {
+    margin-top: 2rem;
+}
+
+.gh-content > figure.kg-card {
+    margin-top: 3rem;
+    margin-bottom: 1rem;
+}
+
+.gh-content > :is(h1, h2, h3, h4, h5, h6) + .kg-card,
+.gh-content > :is(h1, h2, h3, h4, h5, h6) + figure.kg-card {
+    margin-top: 1.25em;
+}
+
+.gh-content > .kg-card:first-child {
+    margin-top: 0;
+}
+
+/* ---- Headings ---- */
+
+.gh-content h1,
+.gh-content h2,
+.gh-content h3,
+.gh-content h4,
+.gh-content h5,
+.gh-content h6 {
+    color: rgb(255 255 255 / 0.9);
+    scroll-margin-top: 6rem;
+}
+
+.gh-content h1 {
+    font-size: 2.25em;
+    font-weight: 800;
+    line-height: 1.1111111;
+    margin-top: 0;
+}
+
+.gh-content h2 {
+    font-size: 1.5em;
+    font-weight: 700;
+    line-height: 1.3333333;
+    margin-top: 1.75em;
+    margin-bottom: 0.6em;
+}
+
+.gh-content h3 {
+    font-size: 1.25em;
+    font-weight: 600;
+    line-height: 1.5;
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+}
+
+.gh-content h4,
+.gh-content h5,
+.gh-content h6 {
+    font-size: 1em;
+    font-weight: 600;
+    line-height: 1.5;
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+}
+
+.gh-content :is(h2, h3, h4, h5, h6) + * {
+    margin-top: 0;
+}
+
+/* ---- Links ---- */
+
+.gh-content a:not([class*="kg-"]) {
+    color: var(--ghost-accent, #1c6ef5);
+    font-weight: 500;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 2px;
+}
+
+/* Editor-bolded body text gets the brand color; headings keep their own
+ * color even when the editor nests <strong>/<b> inside them.
+ * (Opinionated — drop the accent color if the brand doesn't want it.) */
+.gh-content strong,
+.gh-content b {
+    color: var(--ghost-accent, #1c6ef5);
+    font-weight: 600;
+}
+
+.gh-content :is(h1, h2, h3, h4, h5, h6) strong,
+.gh-content :is(h1, h2, h3, h4, h5, h6) b {
+    color: inherit;
+}
+
+/* ---- Lists ---- */
+
+.gh-content ul,
+.gh-content ol {
+    padding-left: 1.625em;
+}
+
+.gh-content ul {
+    list-style: disc;
+}
+
+.gh-content ol {
+    list-style: decimal;
+}
+
+.gh-content li {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    padding-left: 0.375em;
+}
+
+.gh-content li::marker {
+    color: rgb(255 255 255 / 0.7);
+}
+
+/* ---- Blockquote ---- */
+
+.gh-content blockquote {
+    margin: 2rem 0 1rem;
+    border-left: 0.25rem solid var(--ghost-accent, #1c6ef5);
+    padding-left: 1em;
+    font-style: italic;
+    font-weight: 500;
+    color: rgb(255 255 255 / 0.7);
+}
+
+.gh-content blockquote.kg-blockquote-alt {
+    border-left: 0;
+    text-align: center;
+    font-size: 1.25em;
+}
+
+/* ---- Horizontal rule ---- */
+
+.gh-content hr {
+    margin: 2rem 0;
+    border: 0;
+    border-top: 1px solid rgb(255 255 255 / 0.18);
+}
+
+.gh-content hr + * {
+    margin-top: 0;
+}
+
+/* ---- Inline code (backtick style, no pill) ---- */
+
+.gh-content code {
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 0.875em;
+    font-weight: 600;
+    color: rgb(255 255 255 / 0.9);
+}
+
+.gh-content code::before,
+.gh-content code::after {
+    content: "`";
+}
+
+/* ---- Code blocks (inverted: light bg, dark text) ---- */
+
+.gh-content pre {
+    background: hsl(0 0% 90%);
+    color: hsl(0 0% 15%);
+    border-radius: 0.5rem;
+    padding: 1em 1.5em;
+    overflow-x: auto;
+    font-size: 0.875em;
+    line-height: 1.7142857;
+}
+
+.gh-content pre code {
+    background: none;
+    border: 0;
+    padding: 0;
+    font-size: inherit;
+    font-weight: 400;
+    color: inherit;
+}
+
+.gh-content pre code::before,
+.gh-content pre code::after {
+    content: none;
+}
+
+/* ---- Images & figures ---- */
+
+.gh-content img {
+    max-width: 100%;
+    height: auto;
+}
+
+.gh-content .kg-image-card img,
+.gh-content .kg-gallery-image img {
+    border-radius: 12px;
+    margin: 0 auto;
+}
+
+.gh-content figure figcaption {
+    text-align: center;
+    margin: 0.75rem auto 0;
+    opacity: 0.8;
+    font-size: 0.875em;
+    color: rgb(255 255 255 / 0.7);
+}
+
+.gh-content figure figcaption a {
+    color: var(--ghost-accent, #1c6ef5);
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+}
+
+/* ---- Tables (row borders only) ---- */
+
+.gh-content table {
+    width: 100%;
+    display: inline-block;
+    overflow-x: auto;
+    border-collapse: collapse;
+    font-size: 0.875em;
+    line-height: 1.7142857;
+}
+
+.gh-content thead th {
+    color: rgb(255 255 255 / 0.9);
+    font-weight: 600;
+    padding: 0 0.5714286em 0.5714286em;
+    text-align: left;
+    border-bottom: 1px solid rgb(255 255 255 / 0.25);
+}
+
+.gh-content tbody td {
+    padding: 0.5714286em;
+    text-align: left;
+    vertical-align: baseline;
+    border-bottom: 1px solid rgb(255 255 255 / 0.12);
+}
+
+.gh-content tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.gh-content thead th:first-child,
+.gh-content tbody td:first-child {
+    padding-left: 0;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Ghost (koenig) cards                                                        */
+/* -------------------------------------------------------------------------- */
+
+/* Wide/full image cards: single-column layout, keep within content */
+.gh-content .kg-width-wide img,
+.gh-content .kg-width-full img {
+    width: 100%;
+}
+
+/* Gallery */
+.gh-content .kg-gallery-container {
+    display: flex;
+    flex-direction: column;
+    max-width: 100%;
+}
+
+.gh-content .kg-gallery-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.gh-content .kg-gallery-image img {
+    display: block;
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.gh-content .kg-gallery-row:not(:first-of-type) {
+    margin: 0.75em 0 0;
+}
+
+.gh-content .kg-gallery-image:not(:first-of-type) {
+    margin: 0 0 0 0.75em;
+}
+
+/* Embeds */
+.gh-content .kg-embed-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.gh-content iframe {
+    max-width: 100%;
+}
+
+.gh-content .kg-embed-card iframe[src*="youtube"],
+.gh-content .kg-embed-card iframe[src*="vimeo"] {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    height: auto;
+}
+
+/* Bookmark card: borderless dark card, bg lift on hover */
+.gh-content .kg-bookmark-card {
+    width: 100%;
+    position: relative;
+}
+
+.gh-content .kg-bookmark-container {
+    display: flex;
+    color: inherit;
+    text-decoration: none;
+    background: rgb(255 255 255 / 0.06);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: background-color 0.2s ease;
+}
+
+.gh-content .kg-bookmark-container:hover {
+    background: rgb(255 255 255 / 0.09);
+}
+
+.gh-content .kg-bookmark-content {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    flex-basis: 100%;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 24px;
+    min-width: 0;
+}
+
+.gh-content .kg-bookmark-title {
+    color: rgb(255 255 255 / 0.92);
+    font-size: 1em;
+    font-weight: 600;
+    line-height: 1.4em;
+}
+
+.gh-content .kg-bookmark-description {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    margin-top: 6px;
+    color: rgb(255 255 255 / 0.6);
+    font-size: 0.875em;
+    font-weight: 400;
+    line-height: 1.5em;
+    max-height: 44px;
+}
+
+.gh-content .kg-bookmark-metadata {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 16px;
+    width: 100%;
+    color: rgb(255 255 255 / 0.75);
+    font-size: 0.875em;
+    font-weight: 500;
+}
+
+.gh-content .kg-bookmark-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    border-radius: 9999px;
+}
+
+.gh-content .kg-bookmark-author,
+.gh-content .kg-bookmark-publisher {
+    display: inline;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.gh-content .kg-bookmark-publisher::after {
+    content: "•";
+    margin: 0 6px;
+}
+
+.gh-content .kg-bookmark-publisher:last-child::after {
+    content: none;
+}
+
+.gh-content .kg-bookmark-thumbnail {
+    position: relative;
+    flex-grow: 1;
+    min-width: 40%;
+}
+
+.gh-content .kg-bookmark-thumbnail img {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    object-fit: cover;
+    border-radius: 0;
+    margin: 0;
+}
+
+/* Callout card (Ghost default rgba palette) */
+.gh-content .kg-callout-card {
+    display: flex;
+    padding: 1.2em 1.6em;
+    border-radius: 3px;
+}
+
+.gh-content .kg-callout-card-grey {
+    background: rgb(124 139 154 / 0.13);
+}
+.gh-content .kg-callout-card-white {
+    background: transparent;
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.18);
+}
+.gh-content .kg-callout-card-blue {
+    background: rgb(33 172 232 / 0.12);
+}
+.gh-content .kg-callout-card-green {
+    background: rgb(52 183 67 / 0.12);
+}
+.gh-content .kg-callout-card-yellow {
+    background: rgb(240 165 15 / 0.13);
+}
+.gh-content .kg-callout-card-red {
+    background: rgb(209 46 46 / 0.11);
+}
+.gh-content .kg-callout-card-pink {
+    background: rgb(225 71 174 / 0.11);
+}
+.gh-content .kg-callout-card-purple {
+    background: rgb(135 85 236 / 0.12);
+}
+.gh-content .kg-callout-card-accent {
+    background: var(--ghost-accent, #1c6ef5);
+    color: #fff;
+}
+
+.gh-content .kg-callout-emoji {
+    padding-right: 0.8em;
+    line-height: 1.25em;
+    font-size: 1.15em;
+}
+
+.gh-content .kg-callout-text {
+    font-size: 0.95em;
+    line-height: 1.5em;
+}
+
+/* Button card — restyle a.kg-btn to match the site's primary CTA button */
+.gh-content .kg-button-card {
+    display: flex;
+    position: static;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 1em;
+}
+
+.gh-content .kg-button-card.kg-align-left {
+    justify-content: flex-start;
+}
+
+.gh-content .kg-button-card a.kg-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.375rem 1.25rem;
+    border-radius: 8px;
+    background: var(--ghost-accent, #1c6ef5);
+    color: #fff;
+    font-family: inherit;
+    font-size: 0.875rem;
+    font-weight: 700;
+    line-height: 1.25rem;
+    white-space: nowrap;
+    text-decoration: none;
+    transition: filter 0.2s ease-in-out;
+}
+
+.gh-content .kg-button-card a.kg-btn:hover {
+    filter: brightness(1.08);
+}
+
+/* Toggle card (needs ToggleCards.tsx for open/close behavior) */
+.gh-content .kg-toggle-card {
+    background: transparent;
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.18);
+    border-radius: 4px;
+    padding: 1.2em;
+}
+
+.gh-content .kg-toggle-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
+.gh-content .kg-toggle-heading-text {
+    color: rgb(255 255 255 / 0.9);
+    font-size: 1.115em;
+    font-weight: 700;
+    line-height: 1.3em;
+}
+
+.gh-content .kg-toggle-card-icon {
+    flex-shrink: 0;
+    width: 1.2em;
+    height: 1.2em;
+    color: rgb(255 255 255 / 0.5);
+    transition: transform 0.2s ease;
+}
+
+.gh-content .kg-toggle-card-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.gh-content .kg-toggle-card[data-kg-toggle-state="close"] .kg-toggle-content {
+    display: none;
+}
+
+.gh-content .kg-toggle-card:not([data-kg-toggle-state="close"]) .kg-toggle-card-icon {
+    transform: rotate(180deg);
+}
+
+.gh-content .kg-toggle-content {
+    margin-top: 0.75em;
+}
+
+/* Audio/video/file cards */
+.gh-content .kg-video-container video,
+.gh-content video,
+.gh-content audio {
+    width: 100%;
+    border-radius: 12px;
+}
+
+.gh-content .kg-video-card video {
+    margin: 0;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Blur-up loading: blurred until the inline onload (ghost-html.ts) adds       */
+/* .is-loaded                                                                  */
+/* -------------------------------------------------------------------------- */
+
+.gh-content img:not(.kg-bookmark-icon) {
+    transition: filter 0.5s ease;
+    will-change: filter;
+}
+
+.gh-content img:not(.is-loaded, .kg-bookmark-icon) {
+    filter: blur(8px);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Reading progress bar ([data-progress-bar], see ReadingProgress.tsx)         */
+/* -------------------------------------------------------------------------- */
+
+[data-progress-bar]::-webkit-progress-bar {
+    background: transparent;
+}
+
+[data-progress-bar]::-webkit-progress-value {
+    background: var(--ghost-accent, #1c6ef5);
+}
+
+[data-progress-bar]::-moz-progress-bar {
+    background: var(--ghost-accent, #1c6ef5);
+}
+
+/* Zoomable content images (pair with a lightbox client component) */
+.gh-content .kg-image-card img,
+.gh-content .kg-gallery-image img {
+    cursor: zoom-in;
+}
+
+/* Subtle outline so content images read with consistent depth on a dark
+   background (follows the image border radius) */
+.gh-content .kg-image-card img,
+.gh-content .kg-gallery-image img {
+    outline: 1px solid rgba(255, 255, 255, 0.1);
+    outline-offset: -1px;
+}

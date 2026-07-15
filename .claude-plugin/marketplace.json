@@ -1,0 +1,26 @@
+{
+    "name": "kasuncfdo-skills",
+    "owner": {
+        "name": "Kasun Chanuka Fernando",
+        "url": "https://github.com/kasuncfdo"
+    },
+    "metadata": {
+        "description": "Personal Claude Code skills by kasuncfdo",
+        "version": "1.0.0"
+    },
+    "plugins": [
+        {
+            "name": "ghost-headless-blog",
+            "source": "./",
+            "description": "Implement a headless Ghost CMS blog in a Next.js App Router site — Content API client, ISR + webhook revalidation, SEO metadata + JSON-LD, sitemap, Ghost koenig-card styling, blur-up images.",
+            "version": "1.0.0",
+            "author": {
+                "name": "Kasun Chanuka Fernando",
+                "url": "https://github.com/kasuncfdo"
+            },
+            "license": "MIT",
+            "keywords": ["ghost", "ghost-cms", "headless-cms", "nextjs", "blog", "isr", "seo"],
+            "category": "development"
+        }
+    ]
+}
