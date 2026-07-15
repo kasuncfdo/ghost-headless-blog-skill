@@ -1,6 +1,6 @@
 {
     "name": "ghost-headless-blog",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "description": "Headless Ghost CMS blog for Next.js App Router — Content API client, ISR + webhook revalidation, tag/author/paged archives with author bio + social rendering, SEO metadata + JSON-LD, sitemap, Ghost koenig-card styling, blur-up images. Battle-tested patterns with copy-paste templates.",
     "author": {
         "name": "Kasun Chanuka Fernando",

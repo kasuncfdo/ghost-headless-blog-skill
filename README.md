@@ -49,11 +49,6 @@ In any Claude Code session:
 /plugin install ghost-headless-blog@kasuncfdo-skills
 ```
 
-> **Private repo note:** marketplace add clones over git, so the machine needs access to
-> this repo (e.g. `gh auth login` or an SSH key on this GitHub account). If HTTPS
-> prompts fail, add via SSH URL instead:
-> `/plugin marketplace add git@github.com:kasuncfdo/ghost-headless-blog-skill.git`
-
 Update later with:
 
 ```
